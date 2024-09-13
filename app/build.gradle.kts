@@ -1,6 +1,9 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
+    alias(libs.plugins.google.play.services)
+    alias(libs.plugins.org.jetbrains.kotlin.kapt)
+    alias(libs.plugins.hilt)
 }
 
 android {
@@ -33,9 +36,23 @@ android {
     kotlinOptions {
         jvmTarget = "1.8"
     }
+    kapt {
+        correctErrorTypes = true
+    }
+    buildFeatures {
+        viewBinding = true
+    }
 }
 
 dependencies {
+    //Firebase Auth
+    implementation(platform(libs.firebase.bom))
+    implementation(libs.firebase.storage.ktx)
+
+    //Dagger Hilt
+    implementation(libs.dagger.hilt)
+    kapt(libs.dagger.hilt.compiler)
+
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
