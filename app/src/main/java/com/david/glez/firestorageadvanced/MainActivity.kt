@@ -6,6 +6,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.david.glez.firestorageadvanced.databinding.ActivityMainBinding
+import com.david.glez.firestorageadvanced.ui.compose.upload.UploadComposeActivity
 import com.david.glez.firestorageadvanced.ui.xml.upload.UploadXmlActivity
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -18,7 +19,7 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        binding.btnXml.setOnClickListener {startActivity(UploadXmlActivity.create(this))}
-        binding.btnCompose.setOnClickListener {}
+        binding.btnXml.setOnClickListener { startActivity(UploadXmlActivity.create(this)) }
+        binding.btnCompose.setOnClickListener { startActivity(UploadComposeActivity.create(this)) }
     }
 }
