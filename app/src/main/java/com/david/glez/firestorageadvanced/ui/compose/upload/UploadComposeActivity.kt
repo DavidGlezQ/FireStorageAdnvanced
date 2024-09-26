@@ -3,13 +3,9 @@ package com.david.glez.firestorageadvanced.ui.compose.upload
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
-import com.david.glez.firestorageadvanced.R
 import com.david.glez.firestorageadvanced.databinding.ActivityUploadComposeBinding
 
 class UploadComposeActivity : AppCompatActivity() {

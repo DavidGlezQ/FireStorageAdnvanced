@@ -56,6 +56,7 @@ dependencies {
 
     //Dagger Hilt
     implementation(libs.dagger.hilt)
+    implementation(libs.androidx.runtime.android)
     kapt(libs.dagger.hilt.compiler)
 
     //Compose
