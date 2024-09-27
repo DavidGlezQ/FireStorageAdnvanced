@@ -8,11 +8,20 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.Card
 import androidx.compose.material.FloatingActionButton
 import androidx.compose.material.Icon
+import androidx.compose.material.OutlinedButton
+import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -24,6 +33,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Dialog
 import androidx.core.content.FileProvider
 import com.david.glez.firestorageadvanced.R
 import com.david.glez.firestorageadvanced.databinding.ActivityUploadComposeBinding
@@ -54,18 +64,66 @@ class UploadComposeActivity : AppCompatActivity() {
     fun UploadScreen(modifier: Modifier = Modifier) {
         val uploadComposeViewModel: UploadComposeViewModel by viewModels()
         var uri: Uri? by remember { mutableStateOf(null) }
+        var showImageDialog by remember { mutableStateOf(false) }
         val intentCameraLauncher =
             rememberLauncherForActivityResult(ActivityResultContracts.TakePicture()) {
                 if (it && uri?.path?.isNotEmpty() == true) {
                     uploadComposeViewModel.uploadBasicImage(uri!!)
                 }
             }
+        val intentGalleryLauncher =
+            rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) {
+                if (it?.path?.isNotEmpty() == true) {
+                    uploadComposeViewModel.uploadBasicImage(it)
+                }
+            }
+
+        if (showImageDialog) {
+            Dialog(onDismissRequest = { showImageDialog = false }) {
+                Card(shape = RoundedCornerShape(12), elevation = 12.dp) {
+                    Column(modifier = Modifier.padding(24.dp)) {
+                        OutlinedButton(
+                            onClick = {
+                                uri = generateUri()
+                                intentCameraLauncher.launch(uri!!)
+                                showImageDialog = false
+                            },
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 8.dp)
+                                .align(Alignment.CenterHorizontally),
+                            border = BorderStroke(2.dp, colorResource(id = R.color.green)),
+                            shape = RoundedCornerShape(42)
+                        ) {
+                            Text(text = "Take Photo", color = colorResource(id = R.color.green))
+                        }
+                        Spacer(modifier = Modifier.height(8.dp))
+                        OutlinedButton(
+                            onClick = {
+                                uri = generateUri()
+                                intentGalleryLauncher.launch("image/*")
+                                showImageDialog = false
+                            },
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 8.dp)
+                                .align(Alignment.CenterHorizontally),
+                            border = BorderStroke(2.dp, colorResource(id = R.color.green)),
+                            shape = RoundedCornerShape(42)
+                        ) {
+                            Text(text = "Select from Gallery", color = colorResource(id = R.color.green))
+                        }
+                    }
+                }
+            }
+        }
 
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.BottomEnd) {
             FloatingActionButton(
                 onClick = {
-                    uri = generateUri()
-                    intentCameraLauncher.launch(uri!!)
+                    showImageDialog = true
+                    //uri = generateUri()
+                    //intentCameraLauncher.launch(uri!!)
                 },
                 modifier = Modifier.padding(end = 16.dp, bottom = 16.dp),
                 backgroundColor = colorResource(
