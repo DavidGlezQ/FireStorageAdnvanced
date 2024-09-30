@@ -10,12 +10,18 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.FileProvider
+import androidx.core.view.isVisible
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
+import com.bumptech.glide.Glide
 import com.david.glez.firestorageadvanced.databinding.ActivityUploadXmlBinding
 import com.david.glez.firestorageadvanced.databinding.DialogImageSelectorBinding
 import dagger.hilt.android.AndroidEntryPoint
 import java.io.File
 import java.text.SimpleDateFormat
 import java.util.*
+import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class UploadXmlActivity : AppCompatActivity() {
@@ -26,17 +32,22 @@ class UploadXmlActivity : AppCompatActivity() {
     private lateinit var binding: ActivityUploadXmlBinding
     private val uploadXmlViewModel: UploadXmlViewModel by viewModels()
     private lateinit var uri: Uri
-
     private var intentCameraLauncher = registerForActivityResult(TakePicture()) {
         if (it && uri.path?.isNotEmpty() == true) {
-            uploadXmlViewModel.uploadBasicImage(uri)
+            uploadXmlViewModel.uploadAndGetImage(uri) { downloadUri ->
+                showNewImage(downloadUri)
+            }
         }
     }
-
     private var intentGalleryLauncher = registerForActivityResult(GetContent()) { uri ->
         uri?.let {
-            uploadXmlViewModel.uploadBasicImage(it)
+            uploadXmlViewModel.uploadAndGetImage(it) { downloadUri ->
+                showNewImage(downloadUri)
+            }
         }
+    }
+    private fun showNewImage(downloadUri: Uri) {
+        Glide.with(this).load(downloadUri).into(binding.ivImage)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -44,11 +55,26 @@ class UploadXmlActivity : AppCompatActivity() {
         binding = ActivityUploadXmlBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        //InitUI Methods
         initUI()
     }
 
     private fun initUI() {
         initListeners()
+        initUIState()
+    }
+    private fun initUIState() {
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                uploadXmlViewModel.isLoading.collect {
+                    binding.pbImage.isVisible = it
+                    if (it) {
+                        binding.ivPlaceHolder.isVisible = false
+                        binding.ivImage.setImageDrawable(null)
+                    }
+                }
+            }
+        }
     }
 
     private fun initListeners() {
@@ -56,6 +82,7 @@ class UploadXmlActivity : AppCompatActivity() {
             showImageDialog()
         }
     }
+
     private fun showImageDialog() {
         val dialogBinding = DialogImageSelectorBinding.inflate(layoutInflater)
         val dialog = AlertDialog.Builder(this).apply {
@@ -76,6 +103,7 @@ class UploadXmlActivity : AppCompatActivity() {
 
         dialog.show()
     }
+
     private fun getImageFromGallery() {
         intentGalleryLauncher.launch("image/*")
     }
