@@ -1,10 +1,12 @@
 package com.david.glez.firestorageadvanced.data
 
 import android.net.Uri
+import android.util.Log
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.ktx.storage
 import javax.inject.Inject
+import kotlinx.coroutines.tasks.await
 
 class StorageService @Inject constructor(private val storage: FirebaseStorage) {
     fun basicExample() {
@@ -14,8 +16,18 @@ class StorageService @Inject constructor(private val storage: FirebaseStorage) {
         reference.path // path/name.png
         reference.bucket // bucket name
     }
+
     fun uploadBasicImage(uri: Uri) {
         val reference = storage.reference.child(uri.lastPathSegment.orEmpty())
         reference.putFile(uri)
+    }
+
+    suspend fun readBasicImage(userId: String): Uri {
+        //val reference = storage.reference.child("$userId/profile.png")
+        val reference = storage.reference.child("20240927_024609image2215984057681218659.jpg")
+        reference.downloadUrl.addOnSuccessListener { Log.i("aris", "success") }
+            .addOnFailureListener { Log.i("aris", "fail") }
+
+        return reference.downloadUrl.await()
     }
 }

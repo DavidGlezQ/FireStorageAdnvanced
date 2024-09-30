@@ -50,6 +50,10 @@ android {
 }
 
 dependencies {
+
+    //Glide
+    implementation (libs.glide)
+
     //Firebase Auth
     implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.storage.ktx)
