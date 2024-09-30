@@ -54,6 +54,9 @@ dependencies {
     //Glide
     implementation (libs.glide)
 
+    //Coil
+    implementation(libs.coil.compose)
+
     //Firebase Auth
     implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.storage.ktx)
