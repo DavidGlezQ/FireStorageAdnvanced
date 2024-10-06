@@ -4,6 +4,7 @@ plugins {
     alias(libs.plugins.google.play.services)
     alias(libs.plugins.org.jetbrains.kotlin.kapt)
     alias(libs.plugins.hilt)
+    alias(libs.plugins.compose.compiler)
 }
 
 android {
