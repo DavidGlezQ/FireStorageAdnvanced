@@ -35,6 +35,7 @@ class UploadXmlActivity : AppCompatActivity() {
     private var intentCameraLauncher = registerForActivityResult(TakePicture()) {
         if (it && uri.path?.isNotEmpty() == true) {
             uploadXmlViewModel.uploadAndGetImage(uri) { downloadUri ->
+                clearText()
                 showNewImage(downloadUri)
             }
         }
@@ -46,6 +47,7 @@ class UploadXmlActivity : AppCompatActivity() {
             }
         }
     }
+
     private fun showNewImage(downloadUri: Uri) {
         Glide.with(this).load(downloadUri).into(binding.ivImage)
     }
@@ -54,7 +56,6 @@ class UploadXmlActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityUploadXmlBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
         //InitUI Methods
         initUI()
     }
@@ -63,6 +64,7 @@ class UploadXmlActivity : AppCompatActivity() {
         initListeners()
         initUIState()
     }
+
     private fun initUIState() {
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
@@ -121,8 +123,16 @@ class UploadXmlActivity : AppCompatActivity() {
         )
     }
 
+    private fun clearText() {
+        binding.etTitle.text?.clear()
+        binding.etTitle.clearFocus()
+    }
+
     private fun createFile(): File {
-        val name: String = SimpleDateFormat("yyyyMMdd_hhmmss").format(Date()) + "image"
+        val userTitle = binding.etTitle.text.toString().trim()
+        val name: String = userTitle.ifEmpty {
+            SimpleDateFormat("yyyyMMdd_hhmmss").format(Date()) + "image"
+        }
         return File.createTempFile(name, ".jpg", getExternalFilesDir("my_image"))
     }
 }
