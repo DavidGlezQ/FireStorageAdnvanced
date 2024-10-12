@@ -17,6 +17,7 @@ import androidx.lifecycle.repeatOnLifecycle
 import com.bumptech.glide.Glide
 import com.david.glez.firestorageadvanced.databinding.ActivityUploadXmlBinding
 import com.david.glez.firestorageadvanced.databinding.DialogImageSelectorBinding
+import com.david.glez.firestorageadvanced.ui.xml.list.ListXmlActivity
 import dagger.hilt.android.AndroidEntryPoint
 import java.io.File
 import java.text.SimpleDateFormat
@@ -82,6 +83,10 @@ class UploadXmlActivity : AppCompatActivity() {
     private fun initListeners() {
         binding.fabImage.setOnClickListener {
             showImageDialog()
+        }
+
+        binding.btnNavigateToList.setOnClickListener {
+            startActivity(ListXmlActivity.create(this))
         }
     }
 

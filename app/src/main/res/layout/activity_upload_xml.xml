@@ -71,4 +71,22 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         android:src="@drawable/ic_camera" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnNavigateToList"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="36dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:backgroundTint="@color/white"
+        android:text="Navigate to List"
+        android:textColor="@color/yellow"
+        app:layout_constraintBottom_toBottomOf="@+id/fabImage"
+        app:layout_constraintEnd_toStartOf="@+id/fabImage"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/fabImage"
+        app:rippleColor="@color/yellow"
+        app:strokeColor="@color/yellow"
+        app:strokeWidth="2dp" />
 </androidx.constraintlayout.widget.ConstraintLayout>
