@@ -40,8 +40,8 @@ class StorageService @Inject constructor(private val storage: FirebaseStorage) {
 
     suspend fun uploadAndDownloadImage(uri: Uri): Uri {
         //Test read metadata
-       /* readCompleteMetadata()
-        return Uri.EMPTY*/
+        /* readCompleteMetadata()
+         return Uri.EMPTY*/
         return suspendCancellableCoroutine<Uri> { cancellableContinuation ->
             val reference = storage.reference.child("download/${uri.lastPathSegment}")
             reference.putFile(uri, createMetadata()).addOnSuccessListener {
@@ -90,5 +90,25 @@ class StorageService @Inject constructor(private val storage: FirebaseStorage) {
             setCustomMetadata("key", "value")
         }
         return metadata
+    }
+
+    private fun uploadImageWithProgress(uri: Uri) {
+        val reference = storage.reference.child("loquesea/miImagen.jpg")
+        reference.putFile(uri)
+            .addOnProgressListener {
+                val progress = (100.0 * it.bytesTransferred) / it.totalByteCount
+                Log.i("imageProgress", "Upload is $progress% done")
+            }
+    }
+
+    private suspend fun getAllImages(): List<Uri> {
+        val reference = storage.reference.child("download")
+        /*reference.listAll().addOnSuccessListener { result ->
+            result.items.forEach {
+                Log.i("imageProgress", "image: ${it.name}")
+            }
+        }*/
+
+        return reference.listAll().await().items.map { it.downloadUrl.await() }
     }
 }
