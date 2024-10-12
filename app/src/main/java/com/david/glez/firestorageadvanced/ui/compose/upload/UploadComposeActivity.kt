@@ -12,6 +12,7 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -42,6 +43,7 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
@@ -53,6 +55,7 @@ import androidx.core.content.FileProvider
 import coil.compose.AsyncImage
 import com.david.glez.firestorageadvanced.R
 import com.david.glez.firestorageadvanced.databinding.ActivityUploadComposeBinding
+import com.david.glez.firestorageadvanced.ui.compose.list.ListComposeActivity
 import dagger.hilt.android.AndroidEntryPoint
 import java.io.File
 import java.text.SimpleDateFormat
@@ -85,10 +88,8 @@ class UploadComposeActivity : AppCompatActivity() {
         var resultUri: Uri? by remember { mutableStateOf(null) }
         val loading by uploadComposeViewModel.isLoading.collectAsState()
         var userTitle: String by remember { mutableStateOf("") }
-
         val focusRequester = remember { FocusRequester() }
         val focusManager = LocalFocusManager.current
-
         val intentCameraLauncher =
             rememberLauncherForActivityResult(ActivityResultContracts.TakePicture()) {
                 if (it && uri?.path?.isNotEmpty() == true) {
@@ -211,22 +212,38 @@ class UploadComposeActivity : AppCompatActivity() {
         )
 
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.BottomEnd) {
-            FloatingActionButton(
-                onClick = {
-                    showImageDialog = true
-                    //uri = generateUri()
-                    //intentCameraLauncher.launch(uri!!)
-                },
-                modifier = Modifier.padding(end = 16.dp, bottom = 16.dp),
-                backgroundColor = colorResource(
-                    id = R.color.green
-                )
-            ) {
-                Icon(
-                    painter = painterResource(id = R.drawable.ic_camera),
-                    contentDescription = null,
-                    tint = Color.White
-                )
+            val context = LocalContext.current
+            Row {
+                OutlinedButton(
+                    onClick = {
+                        startActivity(ListComposeActivity.create(context))
+                    },
+                    modifier = Modifier
+                        .padding(horizontal = 36.dp)
+                        .align(Alignment.CenterVertically),
+                    border = BorderStroke(2.dp, colorResource(id = R.color.green)),
+                    shape = RoundedCornerShape(42)
+                ) {
+                    Text(text = "Navigate to List", color = colorResource(id = R.color.green))
+                }
+
+                FloatingActionButton(
+                    onClick = {
+                        showImageDialog = true
+                        //uri = generateUri()
+                        //intentCameraLauncher.launch(uri!!)
+                    },
+                    modifier = Modifier.padding(end = 16.dp, bottom = 16.dp),
+                    backgroundColor = colorResource(
+                        id = R.color.green
+                    )
+                ) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.ic_camera),
+                        contentDescription = null,
+                        tint = Color.White
+                    )
+                }
             }
         }
     }
