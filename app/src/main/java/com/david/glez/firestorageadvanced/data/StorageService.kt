@@ -4,8 +4,10 @@ import android.net.Uri
 import android.util.Log
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.FirebaseStorage
+import com.google.firebase.storage.StorageMetadata
 import com.google.firebase.storage.UploadTask
 import com.google.firebase.storage.ktx.storage
+import com.google.firebase.storage.storageMetadata
 import javax.inject.Inject
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
@@ -37,9 +39,12 @@ class StorageService @Inject constructor(private val storage: FirebaseStorage) {
     }
 
     suspend fun uploadAndDownloadImage(uri: Uri): Uri {
+        //Test read metadata
+       /* readCompleteMetadata()
+        return Uri.EMPTY*/
         return suspendCancellableCoroutine<Uri> { cancellableContinuation ->
             val reference = storage.reference.child("download/${uri.lastPathSegment}")
-            reference.putFile(uri).addOnSuccessListener {
+            reference.putFile(uri, createMetadata()).addOnSuccessListener {
                 downloadImage(it, cancellableContinuation)
             }.addOnFailureListener {
                 cancellableContinuation.resumeWithException(it)
@@ -53,5 +58,37 @@ class StorageService @Inject constructor(private val storage: FirebaseStorage) {
         uploadTask.storage.downloadUrl.addOnSuccessListener { uri ->
             cancellableContinuation.resume(uri)
         }.addOnFailureListener { cancellableContinuation.resumeWithException(it) }
+    }
+
+    private fun removeImage(): Boolean {
+        val reference = storage.reference.child("download/METADATA4352783564132211675.jpg")
+        return reference.delete().isSuccessful
+    }
+
+    private suspend fun readMetadataBasic() {
+        val reference = storage.reference.child("download/METADATA4352783564132211675.jpg")
+        val response = reference.metadata.await()
+        val metaInfo = response.getCustomMetadata("key")
+        Log.i("keyMetaInfo", "metaInfo: $metaInfo")
+    }
+
+    private suspend fun readCompleteMetadata() {
+        val reference = storage.reference.child("download/METADATA4352783564132211675.jpg")
+        val response = reference.metadata.await()
+
+        response.customMetadataKeys.forEach { key ->
+            response.getCustomMetadata(key)?.let { value ->
+                Log.i("keyMetaInfo", "key: $key, value: $value")
+            }
+        }
+    }
+
+    private fun createMetadata(): StorageMetadata {
+        val metadata = storageMetadata {
+            contentType = "image/jpeg"
+            setCustomMetadata("date", "11-03-1999")
+            setCustomMetadata("key", "value")
+        }
+        return metadata
     }
 }
